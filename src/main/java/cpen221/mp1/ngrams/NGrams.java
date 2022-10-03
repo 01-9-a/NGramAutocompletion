@@ -1,13 +1,15 @@
 package cpen221.mp1.ngrams;
 
-import java.lang.reflect.Array;
 import java.text.BreakIterator;
 import java.util.*;
 
+
 public class NGrams {
-    ArrayList<String> NGrams;
-    Set<String> unrepeated;
-    ArrayList<Set<String>> ngSetsArray = new ArrayList<>();
+
+    private List<Map<String, Long>> wordss;
+
+    String[] wordsarray;
+
     private String[] getWords(String text) {
         ArrayList<String> words = new ArrayList<>();
         BreakIterator wb = BreakIterator.getWordInstance();
@@ -18,7 +20,7 @@ public class NGrams {
              start = end, end = wb.next()) {
             String word = text.substring(start, end).toLowerCase();
             word = word.replaceAll("^\\s*\\p{Punct}+\\s*", "").replaceAll("\\s*\\p{Punct}+\\s*$", "");
-            if (!word.equals(" ") && !word.isEmpty()) {
+            if (!word.equals(" ")) {
                 words.add(word);
             }
         }
@@ -34,33 +36,10 @@ public class NGrams {
      *             is not null and is not empty.
      */
     public NGrams(String[] text) {
-        String[] wordsArray;
-        ArrayList<String> ng = new ArrayList<>();
-        int maxLength = 0;
-        for(String s: text){
-            wordsArray = getWords(s);
-            if(wordsArray.length>maxLength) {
-                maxLength = wordsArray.length;
-            }
+        wordsarray=new String[text.length];
+        for (int i=0;i<text.length;i++){
+            wordsarray[i]=text[i];
         }
-        for(int i=0; i<maxLength; i++){
-            Set<String> ngSet = new LinkedHashSet<>();
-            ngSetsArray.add(ngSet);
-        }
-
-        for (String s: text) {
-            wordsArray = getWords(s);
-            for (int i = 0; i < wordsArray.length; i++) {
-                for (int j = i, n = 0; j < wordsArray.length; j++, n++) {
-                    ng.add(String.join(" ", Arrays.copyOfRange(wordsArray, i, j + 1)));
-                    ngSetsArray.get(n).add(String.join(" ", Arrays.copyOfRange(wordsArray, i, j + 1)));
-
-                }
-            }
-        }
-        Set<String> noRepeat = new HashSet<>(ng);
-        this.NGrams = ng;
-        this.unrepeated = noRepeat;
     }
 
     /**
@@ -74,20 +53,22 @@ public class NGrams {
      * 2-grams, ..., n-grams
      */
     public long getTotalNGramCount(int n) {
-        int count = 0;
-
-        for(String s: unrepeated) {
-            int spaceN = 0;
-            for (int i = 0; i < s.length(); i++) {
-                if (s.charAt(i) == ' ') {
-                    spaceN++;
+        long totalcount=0;
+        for(int x=0;x<wordsarray.length;x++){
+            String[] words=getWords(wordsarray[x]);
+            for(int i=1;i<=n;i++){
+                Set<String> seti=new HashSet<>();
+                for(int j=0;j<words.length-i;j++){
+                    String iwords="";
+                    for(int k=j;k<i+j;k++) {
+                        iwords += words[k];
+                    }
+                    seti.add(iwords);
                 }
-            }
-            if (spaceN < n) {
-                count++;
+                totalcount += seti.size();
             }
         }
-        return count;
+        return totalcount; // TODO: Implement this method
     }
 
     /**
@@ -96,16 +77,41 @@ public class NGrams {
      * @return a list of n-grams and their associated counts,
      * with the i-th entry being all the (i+1)-grams and their counts
      */
-
     public List<Map<String, Long>> getAllNGrams() {
-        ArrayList<Map<String, Long>> allNGrams = new ArrayList<>();
-        for(Set<String> set: ngSetsArray) {
-            Map<String, Long> NGramsMap = new LinkedHashMap<>();
-            for (String str: set) {
-                NGramsMap.put(str, (long) Collections.frequency(NGrams, str));
+        long count=0;
+        int max=0;
+        for(int x=0;x<wordsarray.length;x++) {
+            String[] words = getWords(wordsarray[x]);
+            if(words.length>=max){
+                max= words.length;
             }
-            allNGrams.add(NGramsMap);
         }
-        return allNGrams;
+        List<Map<String, Long>> maplist = new ArrayList<>(max);
+        for(int x=0;x<wordsarray.length;x++) {
+            String[] words = getWords(wordsarray[x]);
+            for (int i = 1; i <= words.length; i++) {
+                Map<String, Long> map = new HashMap<>();
+                List<String> igram = new ArrayList<>();
+                for (int j = 0; j <= words.length - i; j++) {
+                    String iwords = "";
+                    for (int k = j; k < i + j; k++) {
+                        iwords += words[k];
+                    }
+                    String iwordsString = String.join(" ", iwords);
+                    igram.add(iwordsString);//creates a list that contains all i-grams
+                }
+                for (String s : igram) {
+                    for (int l = 0; l < igram.size(); l++) {
+                        count = 0;
+                        if (s.equals(igram.get(i))) {
+                            count++;
+                        }
+                    }
+                    map.put(s, count);
+                }
+                maplist.add(map);
+            }
+        }
+        return maplist; // TODO: Implement this method
     }
 }

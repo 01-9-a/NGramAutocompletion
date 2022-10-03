@@ -23,6 +23,18 @@ public class Task1SmokeTests {
     }
 
     @Test
+    public void simpleTestCount1() {
+        String text1 = "the blue cow";
+        String text2 = "The Blue";
+
+        long expectedCount = 9;
+
+        NGrams ng = new NGrams(new String[]{text1, text2});
+
+        assertEquals(expectedCount, ng.getTotalNGramCount(4));
+    }
+
+    @Test
     public void simpleTestGetNGrams() {
         String text1 = "great class";
         String text2 = "good textbook written by him";
