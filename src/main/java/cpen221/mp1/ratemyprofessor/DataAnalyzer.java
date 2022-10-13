@@ -1,15 +1,14 @@
 package cpen221.mp1.ratemyprofessor;
 
 import cpen221.mp1.datawrapper.DataWrapper;
+import cpen221.mp1.histogram.Histogram;
 
 import java.io.FileNotFoundException;
-import java.text.BreakIterator;
 import java.util.*;
 
-public class DataAnalyzer {
-    private final String[] rating = {"ML","WL","MM","WM","MH","WH"};
-    private final int[] counter = {0,0,0,0,0,0};
-    List<List<String>> dataContent;
+public class DataAnalyzer{
+    ArrayList<String>reviews=new ArrayList();
+    Map<String ,Long>map= new LinkedHashMap<>();
 
     /**
      * Create an object to analyze a RateMyProfessor dataset
@@ -18,16 +17,10 @@ public class DataAnalyzer {
      */
     public DataAnalyzer(String dataSourceFileName) throws FileNotFoundException {
         DataWrapper dw = new DataWrapper(dataSourceFileName);
-        dataContent = new ArrayList<>();
-        dw.resetScanner();
-        dw.nextLine();
-        String nextLine = dw.nextLine();
-        while(nextLine!=null){
-            String thisLine = nextLine;
-            List<String> separated = Arrays.asList(thisLine.split(","));
-            dataContent.add(separated);
-            nextLine = dw.nextLine();
+        while(dw.dataReader.hasNext()){
+            this.reviews.add(dw.nextLine());
         }
+        // TODO: Implement the rest of this method as appropriate
     }
 
     /**
@@ -42,51 +35,37 @@ public class DataAnalyzer {
      * men-high (MH), and women-high (WH)
      */
     public Map<String, Long> getHistogram(String query) {
-        Map<String, Long> histogram = new HashMap<>();
-        for(List<String> l: dataContent){
-            String str = " " + l.get(2) + " ";
-            int lastIndex = 0;
-            int count = 0;
-            String findStr = " "+query+" ";
-            while (lastIndex != -1) {
-
-                lastIndex = str.indexOf(findStr, lastIndex);
-
-                if (lastIndex != -1) {
-                    count++;
-                    lastIndex += findStr.length();
-                }
-            }
-            if(count!=0){
-                float rating = Float.parseFloat(l.get(0));
-                if(l.get(1).equals("M")) {
-                    if (rating >= 0 && rating <= 2) {
-                        counter[0]+=count;
-                    }
-                    else if(rating > 2 && rating <= 3.5){
-                        counter[2]+=count;
-                    }
-                    else if(rating > 3.5 && rating <= 5){
-                        counter[4]+=count;
+        Map<String, Long> map = new LinkedHashMap<>(Map.of(
+                "ML", 0L,
+                "WL", 0L,
+                "MM", 0L,
+                "WM", 0L,
+                "MH", 0L,
+                "WH", 0L
+        ));
+        for (String s : reviews) {
+            if (s.contains(query)) {
+                long count=0L;
+                for(int i=0;i+query.length()<s.length();i++) {
+                    String str=s.substring(i,i+query.length());
+                    if(str.equals(query)){
+                        int spaceplace=i-1;
+                        if (s.charAt(spaceplace) == ',' || s.charAt(spaceplace) == ' ') {
+                            count++;
+                        }
                     }
                 }
-                else {
-                    if (rating >= 0 && rating <= 2) {
-                        counter[1]+=count;
-                    }
-                    else if(rating > 2 && rating <= 3.5){
-                        counter[3]+=count;
-                    }
-                    else if(rating > 3.5 && rating <= 5){
-                        counter[5]+=count;
-                    }
+
+                String cate = category(s);
+                if (map.get(cate) == null) {
+                    map.put(cate, count);
+                } else {
+                    map.put(cate, map.get(cate) + count);
                 }
             }
         }
-        for(int i=0; i<counter.length; i++){
-            histogram.put(rating[i], (long) counter[i]);
-        }
-        return histogram; // TODO: Implement this method
+        this.map=map;
+            return map; // TODO: Implement this method
     }
 
     /**
@@ -99,6 +78,72 @@ public class DataAnalyzer {
         // TODO: This is an optional component but is
         //  instructive in that graphing may not be that hard!
         //  See the histogram package.
+        Histogram his=new Histogram("Histogram of counts of keywords in reviews","keywords","count");
+        List<String> xData  = Arrays.asList("L", "M", "H");
+        int ml,mm,mh=0;
+        if(histogram.get("ML")!=null){
+            ml=histogram.get("ML").intValue();
+        }else{
+            ml=0;
+        }
+        if(histogram.get("MM")!=null){
+            mm=histogram.get("MM").intValue();
+        }else{
+            mm=0;
+        }
+        if(histogram.get("MH")!=null){
+            mh=histogram.get("MH").intValue();
+        }else{
+            mh=0;
+        }
+        List<Integer> yData  = Arrays.asList(ml,mm,mh);
+        his.addSeries("M", xData, yData);
+
+        int wl,wm,wh=0;
+        if(histogram.get("WL")!=null){
+            wl=histogram.get("WL").intValue();
+        }else{
+            wl=0;
+        }
+        if(histogram.get("WM")!=null){
+            wm=histogram.get("WM").intValue();
+        }else{
+            wm=0;
+        }
+        if(histogram.get("WH")!=null){
+            wh=histogram.get("WH").intValue();
+        }else{
+            wh=0;
+        }
+        yData  = Arrays.asList(wl,wm,wh);
+        his.addSeries("W", xData, yData);
+        his.showChart();
+
+    }
+    public static void main(String[] args) throws FileNotFoundException {
+        DataAnalyzer testhis=new DataAnalyzer("data/reviews2.txt");
+        Map<String,Long> m=testhis.getHistogram("he is");
+        testhis.showHistogramChart(m);
     }
 
+    public String category(String s){
+        String cate="";
+        if(s.contains("M")){
+            cate=cate+"M";
+        }else if(s.contains("W")){
+            cate=cate+"W";
+        }
+        double rate=0;
+        String ratestring=s.substring(0,3);
+        rate=Double.parseDouble(ratestring);
+        if(rate>=0&&rate<=2){
+            cate+="L";
+        }else if(rate>2&&rate<=3.5){
+            cate+="M";
+        }else if(rate>3.5&&rate<=5){
+            cate+="H";
+        }
+        return cate;
+    }
 }
+

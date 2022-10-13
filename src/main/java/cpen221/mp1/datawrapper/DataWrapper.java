@@ -7,7 +7,7 @@ import cpen221.mp1.autocompletion.gui.In;
 
 public class DataWrapper {
 
-    private Scanner dataReader;
+    public Scanner dataReader;
 
     /**
      * Constructor for DataWrapper, opens a file and creates a scanner to go through the data
