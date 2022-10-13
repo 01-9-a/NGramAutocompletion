@@ -40,7 +40,17 @@ public class SearchTerm implements Comparable<SearchTerm> {
      * @return a comparator that compares two search terms lexicographically
      */
     public static Comparator<SearchTerm> byPrefixOrder() {
-        return null; // TODO: Implement this method
+        Comparator<SearchTerm> byPrefixOrder=new Comparator<SearchTerm>() {
+            @Override
+            public int compare(SearchTerm o1, SearchTerm o2) {
+                String o1s=o1.query;
+                String o2s=o2.query;
+
+                return o1s.compareTo(o2s);
+            }
+        };
+
+        return byPrefixOrder;// TODO: Implement this method
     }
 
     /**
