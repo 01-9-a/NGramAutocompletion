@@ -1,11 +1,14 @@
 package cpen221.mp1.searchterm;
 
+import cpen221.mp1.ngrams.NGrams;
+
 import java.util.Comparator;
 
 public class SearchTerm implements Comparable<SearchTerm> {
 
     private String query;
     private long   weight;
+    NGrams ng;
 
     /**
      * Initializes a term with the given query string and weight.
@@ -17,6 +20,8 @@ public class SearchTerm implements Comparable<SearchTerm> {
     public SearchTerm(String query, long weight) {
         this.query  = query;
         this.weight = weight;
+        String[] queryArray= {query};
+        this.ng = new NGrams(queryArray);
     }
 
     /**
@@ -40,6 +45,7 @@ public class SearchTerm implements Comparable<SearchTerm> {
      * @return a comparator that compares two search terms lexicographically
      */
     public static Comparator<SearchTerm> byPrefixOrder() {
+
         return null; // TODO: Implement this method
     }
 
@@ -61,6 +67,17 @@ public class SearchTerm implements Comparable<SearchTerm> {
      */
     public String toString() {
         return String.format("%-10d\t%s", this.weight, this.query);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof SearchTerm) {
+            SearchTerm otherST = (SearchTerm) other;
+            return (this.query.equals(otherST.query) && this.weight == otherST.weight);
+        }
+        else {
+            return false;
+        }
     }
 
 }
