@@ -3,9 +3,14 @@ package cpen221.mp1.ratemyprofessor;
 import cpen221.mp1.datawrapper.DataWrapper;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
+import java.text.BreakIterator;
+import java.util.*;
 
 public class DataAnalyzer {
+    private final String[] rating = {"ML","WL","MM","WM","MH","WH"};
+    private final int[] counter = {0,0,0,0,0,0};
+    List<List<String>> dataContent;
+
     /**
      * Create an object to analyze a RateMyProfessor dataset
      * @param dataSourceFileName the name of the file that contains the data
@@ -13,7 +18,16 @@ public class DataAnalyzer {
      */
     public DataAnalyzer(String dataSourceFileName) throws FileNotFoundException {
         DataWrapper dw = new DataWrapper(dataSourceFileName);
-        // TODO: Implement the rest of this method as appropriate
+        dataContent = new ArrayList<>();
+        dw.resetScanner();
+        dw.nextLine();
+        String nextLine = dw.nextLine();
+        while(nextLine!=null){
+            String thisLine = nextLine;
+            List<String> separated = Arrays.asList(thisLine.split(","));
+            dataContent.add(separated);
+            nextLine = dw.nextLine();
+        }
     }
 
     /**
@@ -28,7 +42,51 @@ public class DataAnalyzer {
      * men-high (MH), and women-high (WH)
      */
     public Map<String, Long> getHistogram(String query) {
-        return null; // TODO: Implement this method
+        Map<String, Long> histogram = new HashMap<>();
+        for(List<String> l: dataContent){
+            String str = " " + l.get(2) + " ";
+            int lastIndex = 0;
+            int count = 0;
+            String findStr = " "+query+" ";
+            while (lastIndex != -1) {
+
+                lastIndex = str.indexOf(findStr, lastIndex);
+
+                if (lastIndex != -1) {
+                    count++;
+                    lastIndex += findStr.length();
+                }
+            }
+            if(count!=0){
+                float rating = Float.parseFloat(l.get(0));
+                if(l.get(1).equals("M")) {
+                    if (rating >= 0 && rating <= 2) {
+                        counter[0]+=count;
+                    }
+                    else if(rating > 2 && rating <= 3.5){
+                        counter[2]+=count;
+                    }
+                    else if(rating > 3.5 && rating <= 5){
+                        counter[4]+=count;
+                    }
+                }
+                else {
+                    if (rating >= 0 && rating <= 2) {
+                        counter[1]+=count;
+                    }
+                    else if(rating > 2 && rating <= 3.5){
+                        counter[3]+=count;
+                    }
+                    else if(rating > 3.5 && rating <= 5){
+                        counter[5]+=count;
+                    }
+                }
+            }
+        }
+        for(int i=0; i<counter.length; i++){
+            histogram.put(rating[i], (long) counter[i]);
+        }
+        return histogram; // TODO: Implement this method
     }
 
     /**
