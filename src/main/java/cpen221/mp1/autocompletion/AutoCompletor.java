@@ -9,48 +9,49 @@ import java.util.Map;
 public class AutoCompletor {
 
     private static final int DEFAULT_SEARCH_LIMIT = 10;
+    List<Map<String,Long>> searchterms=new ArrayList<>();
     SearchTerm[] searchTerms;
-    List<Map<String, Long>> searchTermsMaps;
-
-
     /**
-     * Initializes an auto completer with the given search terms.
+     * Initializes a term with the given searchTerms.
      *
-     * @param searchTerms an array of search terms, is not null and not empty
+     * @param searchTerms a list of search terms, is not null and not empty.
+     *
      */
     public AutoCompletor(SearchTerm[] searchTerms) {
-        this.searchTerms = searchTerms;
+        this.searchTerms=searchTerms;
     }
 
-
     /**
-     * Initializes an auto completer with the given search terms.
+     * Initializes a term with the given searchTerms list.
      *
-     * @param searchTerms a list of search terms, is not null and not empty
+     * @param searchTerms a list of search terms, is not null and not empty.
+     *                    searchTerms contains n-grams
      */
     public AutoCompletor(List<Map<String, Long>> searchTerms) {
-        this.searchTermsMaps = searchTerms;
+        this.searchterms=searchTerms;
     }
 
     /**
-     * Returns all the SearchTerms that match the given prefix.
+     * return all the SearchTerms that match the given prefix.
      *
-     * @param prefix a string that is the prefix of some SearchTerms
-     * @return an array of SearchTerms that match the given prefix
+     * @param prefix a string represents the prefix of some searchTerms
+     * @return an array of SearchTerms that match the given prefix.
      */
     public SearchTerm[] allMatches(String prefix) {
-        ArrayList<SearchTerm> arrList = new ArrayList<>();
+        ArrayList<SearchTerm> MatchSearchTerms= new ArrayList<>();
         for(SearchTerm s: searchTerms){
-            int tabIndex = s.toString().indexOf("\t");
-            if(s.toString().startsWith(prefix,tabIndex+1)){
-                arrList.add(s);
+            int tabposition=s.toString().indexOf("\t");
+            if(s.toString().startsWith(prefix, tabposition+1)){
+                MatchSearchTerms.add(s);
             }
         }
-        SearchTerm[] arr = new SearchTerm[arrList.size()];
-        for(int i=0; i< arrList.size(); i++){
-            arr[i] = arrList.get(i);
+        SearchTerm[] MatchSearchTerm=new SearchTerm[MatchSearchTerms.size()];
+        for(int i=0;i<MatchSearchTerm.length;i++){
+            MatchSearchTerm[i]=MatchSearchTerms.get(i);
         }
-        return arr;
+
+
+        return MatchSearchTerm;
     }
 
     /**
@@ -61,15 +62,17 @@ public class AutoCompletor {
      * @return an array of top-K SearchTerms that match the given prefix
      */
     public SearchTerm[] topKMatches(String prefix, int limit) {
-        SearchTerm[] arrAll = allMatches(prefix);
-        if(limit> arrAll.length){
-            return arrAll;
+        SearchTerm[] topkst = new SearchTerm[limit];
+        SearchTerm[] allst = allMatches(prefix);
+        if (allst.length < limit) {
+            return allst;
+        } else {
+            for (int i = 0; i < limit; i++) {
+                topkst[i] = allst[i];
+            }
         }
-        SearchTerm[] arr = new SearchTerm[limit];
-        System.arraycopy(arrAll, 0, arr, 0, limit);
-        return arr;
+        return topkst;
     }
-
     /**
      * Returns the top-K (K indicated by a default set number) SearchTerms that match the given prefix.
      *
@@ -87,7 +90,9 @@ public class AutoCompletor {
      * @return the number of matched SearchTerms starts with the given prefix
      */
     public int numberOfMatches(String prefix) {
-        return allMatches(prefix).length;
+        SearchTerm[] st=allMatches(prefix);
+        int num=st.length;
+        return num;
     }
 
 }
