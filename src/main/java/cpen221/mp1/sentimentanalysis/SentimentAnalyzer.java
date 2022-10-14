@@ -11,7 +11,7 @@ public class SentimentAnalyzer {
 
     private String filename;
 
-    private Map<String,Map<String,Long>> bagOfWord = new HashMap<>();
+    private Map<Float,Map<String,Long>> bagOfWord = new HashMap<>();
 
     private float Prating;
 
@@ -23,9 +23,9 @@ public class SentimentAnalyzer {
 
     private float rating;
 
-    private List<String[]> array = new ArrayList<>();
+    private final List<String[]> array = new ArrayList<>();
 
-    private List<String> r = new ArrayList<>();
+    private final List<Float> r = new ArrayList<>();
 
     /**
      *
@@ -48,22 +48,22 @@ public class SentimentAnalyzer {
                 array.add(line.split(",",3));
             }
         }
-        for (int i=0; i<array.size(); i++) {
-            if (!r.contains(array.get(i)[0])) {
-                r.add(array.get(i)[0]);
+        for (String[] strings : array) {
+            if (!r.contains(Float.parseFloat(strings[0]))) {
+                r.add(Float.parseFloat(strings[0]));
             }
         }
-        for (String string:r) {
+        for (Float f:r) {
             List<String> text = new ArrayList<>();
-            for (int i=0; i<array.size(); i++) {
-                if (Objects.equals(string, array.get(i)[0])) {
-                    text.add(array.get(i)[2]);
+            for (String[] strings : array) {
+                if (Objects.equals(f, Float.parseFloat(strings[0]))) {
+                    text.add(strings[2]);
                 }
             }
             String[] text1 = new String[text.size()];
             text1 = text.toArray(text1);
             NGrams n = new NGrams(text1);
-            bagOfWord.put(string, n.getAllNGrams().get(0));
+            bagOfWord.put(f, n.getAllNGrams().get(0));
         }
     }
 
@@ -80,12 +80,11 @@ public class SentimentAnalyzer {
         // the method.
         String[] review = getWords(reviewText);
         Prating_bag=0;
-        float Ptemp = 0;
-        int occurrences_r = 0;
+        Pbag=1;
+        Pbag_rating=1;
+        float temp = 0;
         int number = array.size();
         long totalNumOfWord=0;
-        int occurrences_w = 0;
-        int occurrences_w_r = 0;
 
         for (Map map:bagOfWord.values()) {
             for (Object l:map.values()) {
@@ -93,45 +92,54 @@ public class SentimentAnalyzer {
             }
         }
 
-        for (String string:r) {
-            for (int i=0; i<array.size(); i++) {
-                if (Objects.equals(string, array.get(i)[0])) {
+        for (Float f:r) {
+            Pbag=1;
+            Pbag_rating=1;
+            int occurrences_r = 0;
+            long occurrences_w = 0;
+            long occurrences_w_r = 0;
+            for (String[] strings : array) {
+                if (Objects.equals(f, Float.parseFloat(strings[0]))) {
                     occurrences_r++;
                 }
             }
             Prating = (float) occurrences_r/number;
 
             float Pword = 0;
-            for (int i=0; i<review.length; i++) {
+            for (String s : review) {
                 for (Map map : bagOfWord.values()) {
-                    if (map.containsKey(review[i])) {
-                        occurrences_w += (int)map.get(review[i]);
+                    if (map.containsKey(s)) {
+                        occurrences_w += (long) map.get(s);
                     }
                 }
-                Pword = (float) occurrences_w/totalNumOfWord;
+                Pword = (float) occurrences_w / totalNumOfWord;
                 Pbag *= Pword;
             }
 
             float Pbr = 0;
             int totalNumOfWordRating = 0;
-            for (long l:bagOfWord.get(string).values()) {
+            for (long l:bagOfWord.get(f).values()) {
                 totalNumOfWordRating += (int)l;
             }
-            for (int i=0; i<review.length; i++) {
-                occurrences_w_r += bagOfWord.get(string).get(review[i]);
-                Pbr = (float) occurrences_w_r/totalNumOfWordRating;
+            for (String s : review) {
+                if (bagOfWord.get(f).get(s)==null) {
+                    Pbr = (float) (occurrences_w_r+1) / (totalNumOfWordRating+1);
+                }
+                else {
+                    occurrences_w_r = bagOfWord.get(f).get(s);
+                    Pbr = (float) occurrences_w_r / totalNumOfWordRating;
+                }
                 Pbag_rating *= Pbr;
             }
 
-            Ptemp = Pbag_rating*Prating/Pbag;
+            temp = Pbag_rating*Prating/Pbag;
 
-            if (Ptemp>Prating_bag) {
-                rating = Float.parseFloat(string);
-                Prating_bag=Ptemp;
+            if (temp>=Prating_bag) {
+                rating = f;
+                Prating_bag=temp;
             }
         }
         return rating;
-
     }
 
     private String[] getWords(String text) {
