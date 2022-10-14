@@ -58,6 +58,7 @@ public class SearchTerm implements Comparable<SearchTerm> {
      */
     @Override
     public int compareTo(SearchTerm other) {
+
         return SearchTerm.byPrefixOrder().compare(this, other);
     }
 
