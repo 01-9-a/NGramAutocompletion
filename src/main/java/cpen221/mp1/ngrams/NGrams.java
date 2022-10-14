@@ -6,11 +6,7 @@ import java.util.Map;
 
 
 public class NGrams {
-    public static void main(String[] args){
-        NGrams ngrams=new NGrams(new String[]{" The blue cow jumps over the blue cow moon!"});
-        long totalcounts=ngrams.getTotalNGramCount(4);
-        System.out.printf("total count is "+totalcounts);
-    }
+
     /**
      * Create an NGrams object
      *
@@ -96,8 +92,12 @@ public class NGrams {
                 for (int b = 0; b < igram.size(); b++) {
                     count = 1;
                     for (int l = b + 1; l < igram.size(); l++) {
-                        if (igram.get(l) == igram.get(b)) {
+                        String str1= igram.get(b);
+                        String str2=igram.get(l);
+                        if (str1.equals(str2)) {
                             count += 1;
+                            igram.remove(l);
+
                         }
                     }
                     map.put(igram.get(b),count);
