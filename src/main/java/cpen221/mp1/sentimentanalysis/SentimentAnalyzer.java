@@ -131,6 +131,7 @@ public class SentimentAnalyzer {
             }
         }
         return rating;
+
     }
 
     private String[] getWords(String text) {
