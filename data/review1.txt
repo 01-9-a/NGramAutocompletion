@@ -1,0 +1,10 @@
+Rating,Professor Gender,Comment Text
+1.0,M,good teacher
+2.0,M,terrible one
+1.0,M,bad teacher
+3.0,M,good teacher
+4.0,M,good teacher
+2.0,M,good teacher
+4.0,M,good teacher
+4.0,M,good teacher
+4.0,M,good teacher
