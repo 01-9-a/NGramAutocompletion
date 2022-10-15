@@ -2,15 +2,12 @@ package cpen221.mp1.autocompletion;
 
 import cpen221.mp1.searchterm.SearchTerm;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AutoCompletor {
 
     private static final int DEFAULT_SEARCH_LIMIT = 10;
     SearchTerm[] searchTerms;
-    List<Map<String, Long>> searchTermsMaps;
 
 
     /**
@@ -29,7 +26,20 @@ public class AutoCompletor {
      * @param searchTerms a list of search terms, is not null and not empty
      */
     public AutoCompletor(List<Map<String, Long>> searchTerms) {
-        this.searchTermsMaps = searchTerms;
+        List<SearchTerm> list = new ArrayList<>();
+        for (Map<String, Long> searchTerm : searchTerms) {
+            for (Map.Entry<String, Long> pair : searchTerm.entrySet()) {
+                String key = pair.getKey();
+                Long value = pair.getValue();
+                SearchTerm s = new SearchTerm(key, value);
+                list.add(s);
+            }
+        }
+        SearchTerm[] arr = new SearchTerm[list.size()];
+        for(int i=0; i< arr.length; i++){
+            arr[i] = list.get(i);
+        }
+        this.searchTerms = arr;
     }
 
     /**
@@ -49,6 +59,42 @@ public class AutoCompletor {
         SearchTerm[] arr = new SearchTerm[arrList.size()];
         for(int i=0; i< arrList.size(); i++){
             arr[i] = arrList.get(i);
+        }
+        if(arrList.size()>1) {
+            Arrays.sort(arr, SearchTerm.byReverseWeightOrder());
+            Collections.reverse(Arrays.asList(arr));
+            long[] numArr = new long[arr.length];
+            for (int i = 0; i < arr.length; i++) {
+                numArr[i] = arr[i].weightToLong();
+            }
+            Set<Long> repeatedN = new HashSet<>();
+            for (int i = 0; i < numArr.length; i++) {
+                for (int j = i + 1; j < numArr.length - 1; j++) {
+                    if (numArr[i] == numArr[j]) {
+                        repeatedN.add(numArr[i]);
+                    }
+                }
+            }
+            if(repeatedN.size()>0){
+                for(long l: repeatedN){
+                    int startIndex = -1;
+                    int endIndex = -1;
+                    for(int i=0; i<numArr.length; i++){
+                        if(numArr[i]==l && startIndex==-1){
+                            startIndex = i;
+                        }
+                    }
+                    for(int i=numArr.length-1; i>=0; i--){
+                        if(numArr[i]==l && endIndex==-1){
+                            endIndex = i;
+                        }
+                    }
+
+                    SearchTerm[] subArray = Arrays.copyOfRange(arr, startIndex, endIndex+1);
+                    Arrays.sort(subArray, SearchTerm.byPrefixOrder());
+                    System.arraycopy(subArray, 0, arr, startIndex, subArray.length);
+                }
+            }
         }
         return arr;
     }

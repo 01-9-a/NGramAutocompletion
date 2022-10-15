@@ -1553,7 +1553,7 @@
         252245	Suihua, China
         252026	Messina, Italy
         251994	Barueri, Brazil
-        251958	Borūjerd, Iran
+        609617	Borūjerd, Iran
         251907	Eimsbüttel, Germany
         251834	Qarchak, Iran
         251641	Taubaté, Brazil
@@ -1697,7 +1697,7 @@
         232919	Takoradi, Ghana
         232758	Kiel, Germany
         232566	Linfen, China
-        231844	Bordeaux, France
+        609617	Bordeaux, France
         231838	Gangānagar, India
         231657	Chigasaki, Japan
         231493	Gent, Belgium

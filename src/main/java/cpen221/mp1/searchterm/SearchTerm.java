@@ -45,8 +45,15 @@ public class SearchTerm implements Comparable<SearchTerm> {
      * @return a comparator that compares two search terms lexicographically
      */
     public static Comparator<SearchTerm> byPrefixOrder() {
+        return new Comparator<SearchTerm>() {
+            @Override
+            public int compare(SearchTerm o1, SearchTerm o2) {
+                String o1s=o1.query;
+                String o2s=o2.query;
 
-        return null; // TODO: Implement this method
+                return o1s.compareTo(o2s);
+            }
+        };
     }
 
     /**
@@ -57,7 +64,6 @@ public class SearchTerm implements Comparable<SearchTerm> {
         return SearchTerm.byPrefixOrder().compare(this, other);
     }
 
-    //
 
     /**
      * Returns a string representation of this SearchTerm.
@@ -67,6 +73,15 @@ public class SearchTerm implements Comparable<SearchTerm> {
      */
     public String toString() {
         return String.format("%-10d\t%s", this.weight, this.query);
+    }
+
+    /**
+     * Returns a number representation of the weight of this SearchTerm.
+     *
+     * @return a number representation of the weight of this SearchTerm
+     */
+    public long weightToLong() {
+        return this.weight;
     }
 
     @Override
