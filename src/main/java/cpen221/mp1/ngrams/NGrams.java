@@ -58,7 +58,7 @@ public class NGrams {
      * @return a list of n-grams and their associated counts,
      * with the i-th entry being all the (i+1)-grams and their counts
      */
-    
+
     public List<Map<String, Long>> getAllNGrams() {
         long count=0;
         int max=0;
@@ -70,40 +70,40 @@ public class NGrams {
         }
         List<Map<String, Long>> maplist = new ArrayList<Map<String, Long>>();
 
-            for (int i = 1; i <= max; i++) {
-                Map<String, Long> map = new LinkedHashMap<>();
-                List<String> igram = new ArrayList<>();
-                for(int x=0;x<wordsarray.length;x++) {
-                    String[] words = (getWords(wordsarray[x]));
-                    for (int j = 0; j <= words.length - i; j++) {
-                        String iwords ="";
-                        for (int k = j; k < i + j; k++) {
-                            if(k!=i+j-1){
-                                if(k<words.length) {
-                                    iwords = iwords+words[k]+" ";
-                                }
-                            }else{
-                                iwords+=words[k];
+        for (int i = 1; i <= max; i++) {
+            Map<String, Long> map = new LinkedHashMap<>();
+            List<String> igram = new ArrayList<>();
+            for(int x=0;x<wordsarray.length;x++) {
+                String[] words = (getWords(wordsarray[x]));
+                for (int j = 0; j <= words.length - i; j++) {
+                    String iwords ="";
+                    for (int k = j; k < i + j; k++) {
+                        if(k!=i+j-1){
+                            if(k<words.length) {
+                                iwords = iwords+words[k]+" ";
                             }
-                        }
-                        igram.add(iwords);//creates a list that contains all i-grams
-                    }
-                }
-                for (int b = 0; b < igram.size(); b++) {
-                    count = 1;
-                    for (int l = b + 1; l < igram.size(); l++) {
-                        String str1= igram.get(b);
-                        String str2=igram.get(l);
-                        if (str1.equals(str2)) {
-                            count += 1;
-                            igram.remove(l);
-
+                        }else{
+                            iwords+=words[k];
                         }
                     }
-                    map.put(igram.get(b),count);
+                    igram.add(iwords);//creates a list that contains all i-grams
                 }
-                maplist.add(map);
             }
+            for (int b = 0; b < igram.size(); b++) {
+                count = 1;
+                for (int l = b + 1; l < igram.size(); l++) {
+                    String str1= igram.get(b);
+                    String str2=igram.get(l);
+                    if (str1.equals(str2)) {
+                        count += 1;
+                        igram.remove(l);
+
+                    }
+                }
+                map.put(igram.get(b),count);
+            }
+            maplist.add(map);
+        }
         return maplist;
     }
 
