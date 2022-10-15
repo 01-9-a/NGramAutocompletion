@@ -2,9 +2,18 @@ Rating,Professor Gender,Comment Text
 1.0,M,good teacher
 2.0,M,terrible one
 1.0,M,bad teacher
-3.0,M,good teacher
+3.0,W,good teacher
+2.5,M,very normal and boring
+2.0,W,bad teacher
+4.0,W,good teacher
 4.0,M,good teacher
-2.0,M,good teacher
-4.0,M,good teacher
-4.0,M,good teacher
-4.0,M,good teacher
+4.0,M,it is good
+1.0,M,teacher
+2.0,M,terrible one
+1.0,M,bad teacher
+3.0,W,have fun
+5.0,M,good teacher
+5.0,W,good teacher
+5.0,W,good teacher
+4.0,M,good class time and have fun;
+4.5,M,is patient;

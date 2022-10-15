@@ -1,46 +1,29 @@
 package cpen221.mp1.sentimentanalysis;
 
 import cpen221.mp1.datawrapper.DataWrapper;
-import cpen221.mp1.ngrams.NGrams;
 
 import java.io.FileNotFoundException;
 import java.text.BreakIterator;
 import java.util.*;
 
 public class SentimentAnalyzer {
+    private final Map<Float,Map<String,Long>> bagOfWord = new HashMap<>();
 
-    private String filename;
-
-    private Map<Float,Map<String,Long>> bagOfWord = new HashMap<>();
-
-    private float Prating;
-
-    private float Pbag;
-
-    private float Prating_bag;
-
-    private float Pbag_rating;
-
-    private float rating;
+    private float rating = 0.0f;
 
     private final List<String[]> array = new ArrayList<>();
 
     private final List<Float> r = new ArrayList<>();
 
     /**
-     *
-     * @param filename
+     * Constructor of the sentiment analyzer.
+     * @param filename is the name of the file.
+     *                 It can not be null and the file is not empty
+     * @throws FileNotFoundException when the file does not exist
+     * or is at the wrong place.
      */
     public SentimentAnalyzer(String filename) throws FileNotFoundException {
-        // TODO: Implement this constructor and write the spec
-        // You may assume that the file is in the format
-        // of the RateMyProfessor data with each line containing
-        // a rating, a second column (gender or similar) that you
-        // can ignore for this task, and the text of the review.
-        // The file whose name is provided here is expected to
-        // contain the **training data** with which you build
-        // your prediction model.
-        this.filename=filename;
+
         DataWrapper read = new DataWrapper(filename);
         read.nextLine();
         for (String line=read.nextLine(); line!=null; line=read.nextLine()) {
@@ -60,41 +43,49 @@ public class SentimentAnalyzer {
                     text.add(strings[2]);
                 }
             }
-            String[] text1 = new String[text.size()];
-            text1 = text.toArray(text1);
-            NGrams n = new NGrams(text1);
-            bagOfWord.put(f, n.getAllNGrams().get(0));
+            String text1 = text.toString();
+            bagOfWord.put(f, getOneGram(text1));
         }
     }
 
+    public Map<String,Long> getOneGram(String text) {
+        Map<String,Long> oneGram = new HashMap<>();
+        String[] t = getWords(text);
+        for (String s : t) {
+            if (!oneGram.containsKey(s)) {
+                oneGram.put(s, 1L);
+            } else {
+                long count = oneGram.get(s);
+                count++;
+                oneGram.put(s, count);
+            }
+        }
+        return oneGram;
+    }
+
     /**
-     *
-     * @param reviewText
-     * @return
+     * To find the rating that best matches the comment.
+     * @param reviewText The text would like to be checked in the comments.
+     *                   It can not be empty. It must be the words appearing in comments.
+     * @return rating. If there are two or more ratings meeting the requirements, return the
+     * highest rating.
      */
     public float getPredictedRating(String reviewText) {
-        // TODO: Implement this method for predicting
-        // the rating given the text of a review using
-        // the simple Bayesian approach outlined in the
-        // MP statement. Also write the specification for
-        // the method.
+
         String[] review = getWords(reviewText);
-        Prating_bag=0;
-        Pbag=1;
-        Pbag_rating=1;
-        float temp = 0;
+        float prating_bag = 0;
         int number = array.size();
         long totalNumOfWord=0;
 
         for (Map map:bagOfWord.values()) {
-            for (Object l:map.values()) {
-                totalNumOfWord += (long)l;
+            for (Object l : map.values()) {
+                totalNumOfWord += (long) l;
             }
         }
 
         for (Float f:r) {
-            Pbag=1;
-            Pbag_rating=1;
+            float pbag =1;
+            float pbag_rating =1;
             int occurrences_r = 0;
             long occurrences_w = 0;
             long occurrences_w_r = 0;
@@ -103,7 +94,7 @@ public class SentimentAnalyzer {
                     occurrences_r++;
                 }
             }
-            Prating = (float) occurrences_r/number;
+            float prating = (float) occurrences_r / number;
 
             float Pword = 0;
             for (String s : review) {
@@ -113,10 +104,10 @@ public class SentimentAnalyzer {
                     }
                 }
                 Pword = (float) occurrences_w / totalNumOfWord;
-                Pbag *= Pword;
+                pbag *= Pword;
             }
 
-            float Pbr = 0;
+            float Pbr=0;
             int totalNumOfWordRating = 0;
             for (long l:bagOfWord.get(f).values()) {
                 totalNumOfWordRating += (int)l;
@@ -127,16 +118,22 @@ public class SentimentAnalyzer {
                 }
                 else {
                     occurrences_w_r = bagOfWord.get(f).get(s);
-                    Pbr = (float) occurrences_w_r / totalNumOfWordRating;
+                    Pbr = (float) (occurrences_w_r + 1) / (totalNumOfWordRating + 1);
                 }
-                Pbag_rating *= Pbr;
+                pbag_rating *= Pbr;
             }
 
-            temp = Pbag_rating*Prating/Pbag;
+            float tempp = pbag_rating * prating / pbag;
 
-            if (temp>=Prating_bag) {
-                rating = f;
-                Prating_bag=temp;
+            if (tempp > prating_bag) {
+                prating_bag =tempp;
+                rating=f;
+            }
+            else if (tempp == prating_bag) {
+                prating_bag =tempp;
+                if (rating<f) {
+                    rating=f;
+                }
             }
         }
         return rating;
@@ -152,7 +149,7 @@ public class SentimentAnalyzer {
              start = end, end = wb.next()) {
             String word = text.substring(start, end).toLowerCase();
             word = word.replaceAll("^\\s*\\p{Punct}+\\s*", "").replaceAll("\\s*\\p{Punct}+\\s*$", "");
-            if (!word.equals(" ")) {
+            if (!word.equals(" ")&&!word.equals("")) {
                 words.add(word);
             }
         }

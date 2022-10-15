@@ -1,0 +1,5 @@
+Rating,Professor Gender,Comment Text
+1.0,M,good teacher
+4.0,M,good teacher
+5.0,M,good teacher
+3.0,M,good teacher
