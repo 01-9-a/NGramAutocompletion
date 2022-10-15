@@ -26,20 +26,6 @@ public class Task3Tests {
         ac1 = new AutoCompletor(testIn);
     }
 
-/*
-    @Test
-    public void test_Shang_4() {
-        SearchTerm[] st = ac.topKMatches("Shang", 4);
-
-        SearchTerm shanghai = new SearchTerm("Shanghai, China", 14608512);
-        SearchTerm shangyu = new SearchTerm("Shangyu, China", 770000);
-        SearchTerm shangrao = new SearchTerm("Shangrao, China", 318769);
-        SearchTerm shangqiu = new SearchTerm("Shangqiu, China", 181218);
-        SearchTerm[] expectedST = new SearchTerm[] { shanghai, shangyu, shangrao, shangqiu};
-
-        Assertions.assertArrayEquals(expectedST, st);
-    }
-*/
     @Test
     public void test_Shang_3() {
         SearchTerm[] all = ac1.allMatches("Shang");
