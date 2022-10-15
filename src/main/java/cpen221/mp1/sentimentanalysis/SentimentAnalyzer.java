@@ -17,7 +17,7 @@ public class SentimentAnalyzer {
 
     /**
      * Constructor of the sentiment analyzer.
-     * @param filename is the name of the file.
+     * @param filename the name of the file.
      *                 It can not be null and the file is not empty
      * @throws FileNotFoundException when the file does not exist
      * or is at the wrong place.
@@ -65,7 +65,7 @@ public class SentimentAnalyzer {
 
     /**
      * To find the rating that best matches the comment.
-     * @param reviewText The text would like to be checked in the comments.
+     * @param reviewText the text would like to be checked in the comments.
      *                   It can not be empty. It must be the words appearing in comments.
      * @return rating. If there are two or more ratings meeting the requirements, return the
      * highest rating.
