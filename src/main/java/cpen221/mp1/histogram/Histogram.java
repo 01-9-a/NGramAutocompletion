@@ -15,6 +15,12 @@ public class Histogram {
 
     private CategoryChart chart;
 
+    /**
+     * constructor of histogram with given chart name, x, y Axis title.
+     * @param chartTitle the name of the chart
+     * @param xAxisTitle title of x-axis
+     * @param yAxisTitle title of y-axis
+     */
     public Histogram(String chartTitle, String xAxisTitle, String yAxisTitle) {
         chart = new CategoryChartBuilder().width(chartWidth).height(chartHeight)
                 .title(chartTitle)
@@ -26,26 +32,22 @@ public class Histogram {
         chart.getStyler().setOverlapped(false);
     }
 
+    /**
+     * construct a histogram with given seriesName, x Date and y Data
+     * @param seriesName name of one series we construct
+     * @param xData categorizations shown on x-axis.
+     * @param yData count of each xData shown on y-axis.
+     */
     public void addSeries(String seriesName, List xData, List yData) {
         chart.addSeries(seriesName, xData, yData);
     }
 
+    /**
+     * display the histogram chart
+     */
+
     public void showChart() {
         new SwingWrapper<>(chart).displayChart();
-    }
-
-    public static void main(String[] args) {
-        Histogram h = new Histogram("RMP Gender Bias", "Rating+Gender", "Count");
-
-        List<String> xData  = Arrays.asList("1", "2", "3", "4");
-        List<Integer> yData = Arrays.asList(10, 5, 20, 4);
-        h.addSeries("M", xData, yData);
-
-        xData = Arrays.asList("1", "2", "3", "4");
-        yData = Arrays.asList(7, 21, 6, 9);
-        h.addSeries("W", xData, yData);
-
-        h.showChart();
     }
 
 }

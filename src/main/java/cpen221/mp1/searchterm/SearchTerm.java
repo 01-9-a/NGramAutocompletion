@@ -49,7 +49,6 @@ public class SearchTerm implements Comparable<SearchTerm> {
                 return o1s.compareTo(o2s);
             }
         };
-
         return byPrefixOrder;// TODO: Implement this method
     }
 

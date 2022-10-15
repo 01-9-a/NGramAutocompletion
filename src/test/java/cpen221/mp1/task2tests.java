@@ -9,11 +9,13 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class task2tests {
 
     private static DataAnalyzer da1;
     private static DataAnalyzer da2;
+    private static DataAnalyzer da3;
 
     @BeforeAll
     public static void setUpTests() throws FileNotFoundException {
@@ -33,6 +35,7 @@ public class task2tests {
                 "MH", 0L,
                 "WH", 1L
         );
+        da2.showHistogramChart(da2.getHistogram(query));
         assertEquals(expected, da1.getHistogram(query));
     }
 
@@ -47,11 +50,13 @@ public class task2tests {
                 "MH", 1L,
                 "WH", 0L
         );
+        da2.showHistogramChart(da2.getHistogram(query));
         assertEquals(expected, da2.getHistogram(query));
     }
     @Test
     public void testHis() {
         String query = "his";
+
         Map<String, Long> expected = Map.of(
                 "ML", 1L,
                 "WL", 0L,
@@ -60,10 +65,11 @@ public class task2tests {
                 "MH", 1L,
                 "WH", 0L
         );
+        da2.showHistogramChart(da2.getHistogram(query));
         assertEquals(expected, da2.getHistogram(query));
     }
     @Test
-    public void testHeIs() {
+    public void testHeIs() throws FileNotFoundException {
         String query = "he is";
         Map<String, Long> expected = Map.of(
                 "ML", 1L,
@@ -73,7 +79,9 @@ public class task2tests {
                 "MH", 3L,
                 "WH", 0L
         );
+        da2.showHistogramChart(da2.getHistogram(query));
         assertEquals(expected, da2.getHistogram(query));
+
     }
 
     @Test
@@ -87,7 +95,7 @@ public class task2tests {
                 "MH", 0L,
                 "WH", 0L
         );
+        da2.showHistogramChart(da2.getHistogram(query));
         assertEquals(expected, da2.getHistogram(query));
     }
-
 }

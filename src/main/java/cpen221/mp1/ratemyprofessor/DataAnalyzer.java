@@ -18,6 +18,7 @@ public class DataAnalyzer {
      */
     public DataAnalyzer(String dataSourceFileName) throws FileNotFoundException {
         DataWrapper dw = new DataWrapper(dataSourceFileName);
+        dw.resetScanner();
         while (dw.dataReader.hasNext()) {
             this.reviews.add(dw.nextLine());
         }
@@ -71,7 +72,30 @@ public class DataAnalyzer {
         return map; // TODO: Implement this method
     }
 
-
+    /**
+     * Display the histogram data as a chart
+     *
+     * @param histogram with entries for men-low (ML),
+     *                  women-low (WL), men-medium (MM), women-medium (WM),
+     *                  men-high (MH), and women-high (WH)
+     */
+    public void showHistogramChart(Map<String, Long> histogram) {
+        Histogram his = new Histogram("Histogram of counts of keywords in reviews", "keywords", "count");
+        List<String> xData = Arrays.asList("L", "M", "H");
+        int ml, mm, mh = 0;
+        ml=histogram.get("ML").intValue();
+        mm = histogram.get("MM").intValue();
+        mh = histogram.get("MH").intValue();
+        List<Integer> yData = Arrays.asList(ml, mm, mh);
+        his.addSeries("M", xData, yData);
+        int wl, wm, wh = 0;
+        wl = histogram.get("WL").intValue();
+        wm = histogram.get("WM").intValue();
+        wh = histogram.get("WH").intValue();
+        yData = Arrays.asList(wl, wm, wh);
+        his.addSeries("W", xData, yData);
+        his.showChart();
+    }
     /**
      * categorize each string based on the information it given
      *
@@ -99,6 +123,4 @@ public class DataAnalyzer {
         return cate;
     }
 
-
 }
-

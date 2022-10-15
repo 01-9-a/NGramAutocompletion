@@ -24,9 +24,9 @@ public class DataWrapper {
      * @return a string that is the next line of the data or if there is no next line returns null
      */
     public String nextLine() {
-        if (dataReader.hasNextLine()) {
+        if(dataReader.hasNext()) {
             return dataReader.nextLine();
-        } else {
+        }else{
             return null;
         }
     }
